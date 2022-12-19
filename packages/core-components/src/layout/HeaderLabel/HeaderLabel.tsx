@@ -16,6 +16,7 @@
 
 import Grid from '@material-ui/core/Grid';
 import { makeStyles } from '@material-ui/core/styles';
+import { Theme } from '@material-i/core';
 import Typography from '@material-ui/core/Typography';
 import React from 'react';
 import { Link } from '../../components/Link';
@@ -23,7 +24,7 @@ import { Link } from '../../components/Link';
 /** @public */
 export type HeaderLabelClassKey = 'root' | 'label' | 'value';
 
-const useStyles = makeStyles(
+const useStyles = makeStyles<Theme, HeaderLabelProps>(
   theme => ({
     root: {
       textAlign: 'left',
@@ -36,11 +37,18 @@ const useStyles = makeStyles(
       marginBottom: theme.spacing(1) / 2,
       lineHeight: 1,
     },
-    value: {
+    value: props => ({
+      padding: '2px',
       color: 'rgba(255, 255, 255, 0.8)',
       fontSize: theme.typography.fontSize,
       lineHeight: 1,
-    },
+      ...(props.highlight
+        ? {
+            outline: `1px solid ${theme.palette.common.white}`,
+            borderRadius: '2px',
+          }
+        : {}),
+    }),
   }),
   { name: 'BackstageHeaderLabel' },
 );
@@ -58,6 +66,7 @@ type HeaderLabelProps = {
   label: string;
   value?: HeaderLabelContentProps['value'];
   url?: string;
+  highlight?: boolean;
 };
 
 /**
@@ -68,7 +77,7 @@ type HeaderLabelProps = {
  */
 export function HeaderLabel(props: HeaderLabelProps) {
   const { label, value, url } = props;
-  const classes = useStyles();
+  const classes = useStyles(props);
   const content = (
     <HeaderLabelContent
       className={classes.value}
@@ -84,3 +93,7 @@ export function HeaderLabel(props: HeaderLabelProps) {
     </Grid>
   );
 }
+
+HeaderLabel.defaultProps = {
+  highlight: false,
+};
